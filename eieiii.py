@@ -1,76 +1,86 @@
 import streamlit as st
 import random
+import time
 
-# ตั้งค่าหน้าเว็บให้ดูน่ารัก
-st.set_page_config(page_title="มีเรื่องจะสารภาพ...", page_icon="😳")
+# 1. ตั้งค่าหน้าเว็บ
+st.set_page_config(page_title="Wait for it...", page_icon="⏳")
 
-# ตกแต่ง UI ด้วย CSS
+# 2. CSS ตกแต่ง (เพิ่มความละมุน)
 st.markdown("""
     <style>
-    .main {
-        background: linear-gradient(160deg, #fd1d1d 0%, #fcb045 100%);
+    .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
     .text-white {
         color: white !important;
         text-align: center;
+        font-family: 'Kanit', sans-serif;
     }
     .stButton>button {
         width: 100%;
-        border-radius: 50px;
-        background-color: #ffffff;
-        color: #ff4b4b;
+        border-radius: 20px;
+        height: 3em;
         font-weight: bold;
-        border: none;
-        transition: 0.3s;
-    }
-    .stButton>button:hover {
-        transform: scale(1.05);
-        background-color: #ff4b4b;
-        color: white;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# ใช้ session_state เพื่อคุมการเปลี่ยนหน้า
-if 'clicked' not in st.session_state:
-    st.session_state.clicked = False
+# 3. ควบคุมสถานะ
+if 'stage' not in st.session_state:
+    st.session_state.stage = 'intro'
 
-if not st.session_state.clicked:
-    st.markdown("<h1 class='text-white'>เฮ้ยเธอ... คือว่า 🫣</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='text-white'>เรามีความลับจะบอก เก็บไว้คนเดียวมานานละ</p>", unsafe_allow_html=True)
+# --- เริ่มการทำงาน ---
 
-    st.write("---")
+if st.session_state.stage == 'intro':
+    st.markdown("<h1 class='text-white'>มีคนฝากข้อความมาให้เธอ... ✉️</h1>", unsafe_allow_html=True)
+    st.write(" ")
+    if st.button("เปิดอ่านข้อความ"):
+        st.session_state.stage = 'loading'
+        st.rerun()
 
-    col1, col2 = st.columns([2, 1])
+elif st.session_state.stage == 'loading':
+    st.markdown("<h2 class='text-white'>กำลังดึงข้อมูลจากหัวใจ...</h2>", unsafe_allow_html=True)
 
-    with col1:
-        if st.button("ความลับอะไร? บอกมาดิ๊ ✨"):
-            st.session_state.clicked = True
-            st.rerun()
+    # ลูกเล่นที่ 1: Progress Bar ดึงเชง
+    progress_bar = st.progress(0)
+    status_text = st.empty()
 
-    with col2:
-        # ปุ่มนี้กดแล้วจะมีการแจ้งเตือนกวนๆ
-        if st.button("ไม่อยากรู้ 🙄"):
-            msgs = ["ไม่ได้นะ ต้องรู้ดิ!", "กดฝั่งซ้ายเดี๋ยวนี้!", "หยิ่งจัดดด", "แหมมมมม"]
-            st.toast(random.choice(msgs))
-else:
-    # หน้าสารภาพรัก
-    st.balloons()
-    st.markdown("<h1 class='text-white'>เราชอบเธอนะเว้ยยย! ❤️</h1>", unsafe_allow_html=True)
-
-    # สุ่มคำบอกชอบแบบเนียนๆ
-    confessions = [
-        "ไม่ได้อยากเป็นแค่คนรู้จักแล้วอ่ะ ชอบจริงๆ นะ 😳",
-        "เนี่ย... ที่ทำหน้าเว็บมาก็เพื่อจะบอกคำเนี้ยแหละ 'ชอบนะ'",
-        "ยิ้มบ่อยๆ นะ เราชอบดูเธอยิ้มที่สุดเลย",
-        "ชอบมึงนะ... จบแยก! (เขินว่ะ 5555)",
-        "ไม่รู้เริ่มตอนไหน แต่ตอนนี้ชอบไปแล้วทำไงได้อ่ะ 💘"
+    steps = [
+        "กำลังหาคำพูด...",
+        "รวบรวมความกล้า 20%...",
+        "เขินอยู่ แป๊บนึงนะ 50%...",
+        "ใกล้ความจริงแล้ว... 80%...",
+        "เตรียมตัวนะ! 100%"
     ]
 
-    st.markdown(f"<h2 class='text-white' style='margin-top: 50px;'>{random.choice(confessions)}</h2>",
-                unsafe_allow_html=True)
+    for i, step in enumerate(steps):
+        status_text.markdown(f"<p class='text-white'>{step}</p>", unsafe_allow_html=True)
+        progress_bar.progress((i + 1) * 20)
+        time.sleep(1.5)  # ยิ่งใส่ตัวเลขเยอะ ยิ่งจบช้า
 
-    st.write("---")
-    if st.button("เขินอ่ะดิ... กลับไปหน้าแรกไป๊!"):
-        st.session_state.clicked = False
+    st.session_state.stage = 'confess'
+    st.rerun()
+
+elif st.session_state.stage == 'confess':
+    # ลูกเล่นที่ 2: Typewriter Effect (ข้อความค่อยๆ ขึ้น)
+    st.markdown("<h1 class='text-white'>ความในใจคือ...</h1>", unsafe_allow_html=True)
+
+    message_placeholder = st.empty()
+    full_message = "จริงๆ แล้ว... เราชอบเธอมาตั้งนานแล้วนะเว้ยยย ❤️"
+    typed_message = ""
+
+    for char in full_message:
+        typed_message += char
+        message_placeholder.markdown(f"<h2 class='text-white'>{typed_message}</h2>", unsafe_allow_html=True)
+        time.sleep(0.1)  # ความเร็วในการพิมพ์
+
+    time.sleep(1)  # หยุดรอให้ซึ้งแป๊บนึง
+    st.balloons()
+
+    # สุ่มประโยคปิดท้าย
+    st.markdown("---")
+    st.markdown("<p class='text-white'>สารภาพแล้วนะ... โล่งอกชะมัด 😳</p>", unsafe_allow_html=True)
+
+    if st.button("อ่านอีกรอบไหม?"):
+        st.session_state.stage = 'intro'
         st.rerun()
