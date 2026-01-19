@@ -1,0 +1,74 @@
+import streamlit as st
+import random
+import time
+
+# ตั้งค่าหน้าเว็บ
+st.set_page_config(page_title="มีอะไรจะบอกแหละ...", page_icon="❤️")
+
+# Custom CSS เพื่อความสวยงามและทำให้ปุ่มขยับได้ (จำลองปุ่มหนี)
+st.markdown("""
+    <style>
+    .main {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    }
+    h1 {
+        color: white;
+        text-align: center;
+        font-family: 'Tahoma';
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    .stButton>button {
+        width: 100%;
+        border-radius: 20px;
+        height: 3em;
+        background-color: #ff6b6b;
+        color: white;
+        border: none;
+        font-weight: bold;
+    }
+    .stButton>button:hover {
+        background-color: #ff8787;
+        border: 2px solid white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+if 'confessed' not in st.session_state:
+    st.session_state.confessed = False
+
+if not st.session_state.confessed:
+    st.markdown("<h1>เธอๆ... เรามีอะไรจะบอก 🥺</h1>", unsafe_allow_html=True)
+    st.write("---")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("คือชอบนะ... เป็นแฟนกันป่าว? 💕"):
+            st.session_state.confessed = True
+            st.rerun()
+
+    with col2:
+        # ปุ่ม "ไม่" ที่ใน Python/Streamlit อาจจะขยับหนีลื่นๆ แบบ JS ยาก
+        # เลยใช้วิธีสุ่มข้อความกวนๆ แทนถ้ากด
+        no_messages = ["ไม่เอาหรอก", "ลองกดใหม่ดิ๊", "กดยากหน่อยนะ", "ใจร้ายจัง!", "กดผิดป่าววว"]
+        if st.button("ไม่เป็นอ่ะ 😜"):
+            st.toast(random.choice(no_messages))
+            st.snow() # เอฟเฟกต์หิมะตกแก้เขิน
+
+else:
+    # หน้าจอหลังจากตกลง
+    st.balloons() # เอฟเฟกต์ลูกโป่ง
+    st.markdown("<h1>เย้! ดีใจนะเนี่ย ❤️</h1>", unsafe_allow_html=True)
+
+    love_quotes = [
+        "ชอบมาตั้งนานแล้ว ขอบคุณที่ตกลงนะ 💖",
+        "มึงน่ารักขนาดนี้ ใครจะอดใจไหว 💘",
+        "สัญญาจะดูแลอย่างดีเลยยย ✨",
+        "วันนี้นอนหลับฝันดีแล้วเรา 😳"
+    ]
+
+    st.markdown(f"<h3 style='text-align: center; color: white;'>{random.choice(love_quotes)}</h3>", unsafe_allow_html=True)
+
+    if st.button("กลับไปหน้าแรก"):
+        st.session_state.confessed = False
+        st.rerun()
